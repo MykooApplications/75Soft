@@ -36,7 +36,7 @@ struct ContentView: View {
                             Spacer()
                             Group {
                                 if let entry = todayEntry, let challenge = state.first {
-                                    ChecklistView(entry: entry, challengeState: challenge)
+                                    ChecklistView(viewModel: <#ChallengeViewModel#>)
                                 } else {
                                     Button("Start Today") {
                                         addTodayEntry()
@@ -92,7 +92,4 @@ struct ContentView: View {
         challenge.lastCompletedDate = nil
     }
 }
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
-}
+
