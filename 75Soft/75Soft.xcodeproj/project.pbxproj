@@ -41,6 +41,7 @@
 		D0AB7A452DF0ABB500A81F69 /* Soft75widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Soft75widgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0AB7A472DF0ABB500A81F69 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D0AB7A492DF0ABB500A81F69 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		D0AB7A652DF0CAB600A81F69 /* Soft75widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Soft75widgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -51,11 +52,21 @@
 			);
 			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
 		};
+		D0AB7A6D2DF0DDE500A81F69 /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WidgetSharedModel.swift,
+			);
+			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D0AB7A252DF0A6E700A81F69 /* 75Soft */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D0AB7A6D2DF0DDE500A81F69 /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */,
+			);
 			path = 75Soft;
 			sourceTree = "<group>";
 		};
@@ -92,6 +103,7 @@
 		D0AB7A1A2DF0A6E700A81F69 = {
 			isa = PBXGroup;
 			children = (
+				D0AB7A652DF0CAB600A81F69 /* Soft75widgetExtension.entitlements */,
 				D0AB7A252DF0A6E700A81F69 /* 75Soft */,
 				D0AB7A4B2DF0ABB500A81F69 /* Soft75widget */,
 				D0AB7A462DF0ABB500A81F69 /* Frameworks */,
@@ -446,6 +458,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = Soft75widgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6346F46FVY;
@@ -475,6 +488,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = Soft75widgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6346F46FVY;

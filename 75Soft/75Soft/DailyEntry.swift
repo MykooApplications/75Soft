@@ -35,3 +35,4 @@ class ChallengeState {
         self.lastCompletedDate = nil
     }
 }
+

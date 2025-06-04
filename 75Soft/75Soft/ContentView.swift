@@ -12,42 +12,65 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var entries: [DailyEntry]
     @Query private var state: [ChallengeState]
-
+    
     private var todayEntry: DailyEntry? {
         entries.first(where: { Calendar.current.isDateInToday($0.date) })
     }
-
+    
     var body: some View {
-        VStack {
-            if let entry = todayEntry {
-                ChecklistView(entry: entry)
-                if let state = state.first {
-                    Text("Streak: \(state.streakCount)")
-                    ProgressView(value: Double(state.currentDay), total: 75.0)
-                        .padding()
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // Top 2/3 — Circular progress
+                VStack {
+                    if let state = state.first {
+                        Spacer()
+                        CircularProgressView(currentDay: state.currentDay)
+                        Spacer()
+                    }
                 }
-            } else {
-                Button("Start Today") {
-                    addTodayEntry()
+                .frame(height: geometry.size.height * 0.66)
+                // Bottom 1/3 — Checklist
+                VStack {
+                    GeometryReader { proxy in
+                        VStack {
+                            Spacer()
+                            Group {
+                                if let entry = todayEntry, let challenge = state.first {
+                                    ChecklistView(entry: entry, challengeState: challenge)
+                                } else {
+                                    Button("Start Today") {
+                                        addTodayEntry()
+                                    }
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            Spacer()
+                        }
+                        .frame(height: proxy.size.height)
+                    }
                 }
+                .frame(height: geometry.size.height * 0.34)
             }
+            .padding()
         }
-        .padding()
         .onAppear(perform: checkChallengeState)
+        .onAppear(
+            
+        )
     }
-
+    
     private func addTodayEntry() {
         let newEntry = DailyEntry(date: Date())
         modelContext.insert(newEntry)
     }
-
+    
     private func checkChallengeState() {
         guard let challenge = state.first else {
             let newState = ChallengeState(startDate: Date())
             modelContext.insert(newState)
             return
         }
-
+        
         if let lastDate = challenge.lastCompletedDate,
            !Calendar.current.isDateInToday(lastDate),
            !Calendar.current.isDateInYesterday(lastDate) {
@@ -57,7 +80,7 @@ struct ContentView: View {
             }
         }
     }
-
+    
     private func showResetPrompt(for challenge: ChallengeState) {
         // Use your custom UI or alert system to prompt
         // Here is a placeholder log statement
