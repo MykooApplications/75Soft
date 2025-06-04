@@ -10,56 +10,65 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var entries: [DailyEntry]
+    @Query private var state: [ChallengeState]
+
+    private var todayEntry: DailyEntry? {
+        entries.first(where: { Calendar.current.isDateInToday($0.date) })
+    }
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        VStack {
+            if let entry = todayEntry {
+                ChecklistView(entry: entry)
+                if let state = state.first {
+                    Text("Streak: \(state.streakCount)")
+                    ProgressView(value: Double(state.currentDay), total: 75.0)
+                        .padding()
                 }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+            } else {
+                Button("Start Today") {
+                    addTodayEntry()
                 }
             }
-        } detail: {
-            Text("Select an item")
+        }
+        .padding()
+        .onAppear(perform: checkChallengeState)
+    }
+
+    private func addTodayEntry() {
+        let newEntry = DailyEntry(date: Date())
+        modelContext.insert(newEntry)
+    }
+
+    private func checkChallengeState() {
+        guard let challenge = state.first else {
+            let newState = ChallengeState(startDate: Date())
+            modelContext.insert(newState)
+            return
+        }
+
+        if let lastDate = challenge.lastCompletedDate,
+           !Calendar.current.isDateInToday(lastDate),
+           !Calendar.current.isDateInYesterday(lastDate) {
+            // Missed a day
+            DispatchQueue.main.async {
+                showResetPrompt(for: challenge)
+            }
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+    private func showResetPrompt(for challenge: ChallengeState) {
+        // Use your custom UI or alert system to prompt
+        // Here is a placeholder log statement
+        print("Prompt user: Did you forget to log yesterday?")
+        // If they confirm they missed a day:
+        challenge.currentDay = 1
+        challenge.streakCount = 0
+        challenge.startDate = Date()
+        challenge.lastCompletedDate = nil
     }
 }
-
 #Preview {
     ContentView()
         .modelContainer(for: Item.self, inMemory: true)

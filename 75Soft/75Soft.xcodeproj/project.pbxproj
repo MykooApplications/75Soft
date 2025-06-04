@@ -6,14 +6,65 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D0AB7A482DF0ABB500A81F69 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0AB7A472DF0ABB500A81F69 /* WidgetKit.framework */; };
+		D0AB7A4A2DF0ABB500A81F69 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0AB7A492DF0ABB500A81F69 /* SwiftUI.framework */; };
+		D0AB7A5B2DF0ABB600A81F69 /* Soft75widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D0AB7A452DF0ABB500A81F69 /* Soft75widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D0AB7A592DF0ABB600A81F69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D0AB7A1B2DF0A6E700A81F69 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D0AB7A442DF0ABB500A81F69;
+			remoteInfo = Soft75widgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D0AB7A602DF0ABB600A81F69 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D0AB7A5B2DF0ABB600A81F69 /* Soft75widgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		D0AB7A232DF0A6E700A81F69 /* 75Soft.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 75Soft.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0AB7A452DF0ABB500A81F69 /* Soft75widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Soft75widgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0AB7A472DF0ABB500A81F69 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		D0AB7A492DF0ABB500A81F69 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D0AB7A5F2DF0ABB600A81F69 /* Exceptions for "Soft75widget" folder in "Soft75widgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D0AB7A252DF0A6E700A81F69 /* 75Soft */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = 75Soft;
+			sourceTree = "<group>";
+		};
+		D0AB7A4B2DF0ABB500A81F69 /* Soft75widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D0AB7A5F2DF0ABB600A81F69 /* Exceptions for "Soft75widget" folder in "Soft75widgetExtension" target */,
+			);
+			path = Soft75widget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,6 +77,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D0AB7A422DF0ABB500A81F69 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0AB7A4A2DF0ABB500A81F69 /* SwiftUI.framework in Frameworks */,
+				D0AB7A482DF0ABB500A81F69 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -33,6 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				D0AB7A252DF0A6E700A81F69 /* 75Soft */,
+				D0AB7A4B2DF0ABB500A81F69 /* Soft75widget */,
+				D0AB7A462DF0ABB500A81F69 /* Frameworks */,
 				D0AB7A242DF0A6E700A81F69 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +103,18 @@
 			isa = PBXGroup;
 			children = (
 				D0AB7A232DF0A6E700A81F69 /* 75Soft.app */,
+				D0AB7A452DF0ABB500A81F69 /* Soft75widgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D0AB7A462DF0ABB500A81F69 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D0AB7A472DF0ABB500A81F69 /* WidgetKit.framework */,
+				D0AB7A492DF0ABB500A81F69 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +127,12 @@
 				D0AB7A1F2DF0A6E700A81F69 /* Sources */,
 				D0AB7A202DF0A6E700A81F69 /* Frameworks */,
 				D0AB7A212DF0A6E700A81F69 /* Resources */,
+				D0AB7A602DF0ABB600A81F69 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D0AB7A5A2DF0ABB600A81F69 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D0AB7A252DF0A6E700A81F69 /* 75Soft */,
@@ -69,6 +143,28 @@
 			productName = 75Soft;
 			productReference = D0AB7A232DF0A6E700A81F69 /* 75Soft.app */;
 			productType = "com.apple.product-type.application";
+		};
+		D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D0AB7A5C2DF0ABB600A81F69 /* Build configuration list for PBXNativeTarget "Soft75widgetExtension" */;
+			buildPhases = (
+				D0AB7A412DF0ABB500A81F69 /* Sources */,
+				D0AB7A422DF0ABB500A81F69 /* Frameworks */,
+				D0AB7A432DF0ABB500A81F69 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D0AB7A4B2DF0ABB500A81F69 /* Soft75widget */,
+			);
+			name = Soft75widgetExtension;
+			packageProductDependencies = (
+			);
+			productName = Soft75widgetExtension;
+			productReference = D0AB7A452DF0ABB500A81F69 /* Soft75widgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -81,6 +177,9 @@
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					D0AB7A222DF0A6E700A81F69 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					D0AB7A442DF0ABB500A81F69 = {
 						CreatedOnToolsVersion = 16.4;
 					};
 				};
@@ -100,12 +199,20 @@
 			projectRoot = "";
 			targets = (
 				D0AB7A222DF0A6E700A81F69 /* 75Soft */,
+				D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D0AB7A212DF0A6E700A81F69 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D0AB7A432DF0ABB500A81F69 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +229,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D0AB7A412DF0ABB500A81F69 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D0AB7A5A2DF0ABB600A81F69 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
+			targetProxy = D0AB7A592DF0ABB600A81F69 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		D0AB7A2F2DF0A6E800A81F69 /* Debug */ = {
@@ -319,6 +441,65 @@
 			};
 			name = Release;
 		};
+		D0AB7A5D2DF0ABB600A81F69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6346F46FVY;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Soft75widget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Soft75widget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Monarch.TS.-5Soft.Soft75widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D0AB7A5E2DF0ABB600A81F69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6346F46FVY;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Soft75widget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Soft75widget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Monarch.TS.-5Soft.Soft75widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -336,6 +517,15 @@
 			buildConfigurations = (
 				D0AB7A322DF0A6E800A81F69 /* Debug */,
 				D0AB7A332DF0A6E800A81F69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D0AB7A5C2DF0ABB600A81F69 /* Build configuration list for PBXNativeTarget "Soft75widgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0AB7A5D2DF0ABB600A81F69 /* Debug */,
+				D0AB7A5E2DF0ABB600A81F69 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
