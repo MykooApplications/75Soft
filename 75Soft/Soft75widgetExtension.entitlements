@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.monarch-ts.soft75</string>
+		<string>group.com.roshanm.soft75</string>
 	</array>
 </dict>
 </plist>

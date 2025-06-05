@@ -2,8 +2,10 @@
 //  SharedWidgetData.swift
 //  75Soft
 //
-//  Created by Roshan Mykoo on 6/4/25.
+//  Created by Roshan Mykoo on 6/5/25.
 //
+
+
 import Foundation
 
 struct SharedWidgetData: Codable {

@@ -17,26 +17,30 @@ struct ChallengeEntry: TimelineEntry {
 
 struct ChallengeProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<ChallengeEntry>) -> Void) {
-        let fm = FileManager.default
-        let url = fm
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.yourname.soft75")!
+        let appGroupID = "group.com.roshanm.soft75" // use your actual value
+        let fileURL = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
             .appendingPathComponent("widgetData.json")
 
-        var entry: ChallengeEntry
-
-        if let data = try? Data(contentsOf: url),
+        if let url = fileURL,
+           let data = try? Data(contentsOf: url),
            let decoded = try? JSONDecoder().decode(SharedWidgetData.self, from: data) {
-            entry = ChallengeEntry(
+
+           // print("✅ Widget read data: \(decoded)")
+            
+            let entry = ChallengeEntry(
                 date: Date(),
                 currentDay: decoded.currentDay,
                 streakCount: decoded.streakCount,
                 tasks: decoded.tasks
             )
+            completion(Timeline(entries: [entry], policy: .atEnd))
+
         } else {
-            // Fallback if file not found
-            entry = ChallengeEntry(
+            //print("❌ Widget failed to read or decode JSON")
+            let fallback = ChallengeEntry(
                 date: Date(),
-                currentDay: 1,
+                currentDay: 0,
                 streakCount: 0,
                 tasks: [
                     "💧 Water": false,
@@ -45,10 +49,11 @@ struct ChallengeProvider: TimelineProvider {
                     "🏃‍♂️ Workout": false
                 ]
             )
+            completion(Timeline(entries: [fallback], policy: .atEnd))
         }
-
-        completion(Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(600))))
     }
+    
+    
     func placeholder(in context: Context) -> ChallengeEntry {
         ChallengeEntry(
             date: Date(),
@@ -66,7 +71,7 @@ struct ChallengeProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (ChallengeEntry) -> Void) {
         let fm = FileManager.default
         let url = fm
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.yourname.soft75")!
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.roshanm.soft75")!
             .appendingPathComponent("widgetData.json")
 
         var entry: ChallengeEntry

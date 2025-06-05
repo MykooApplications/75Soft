@@ -6,7 +6,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.monarch-ts.soft75</string>
+		<string>group.com.roshanm.soft75</string>
 	</array>
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>

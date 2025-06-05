@@ -52,10 +52,10 @@
 			);
 			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
 		};
-		D0AB7A6D2DF0DDE500A81F69 /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */ = {
+		D0BFFB562DF247620026B46D /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Models/WidgetSharedModel.swift,
+				Models/SharedWidgetData.swift,
 			);
 			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
 		};
@@ -65,7 +65,7 @@
 		D0AB7A252DF0A6E700A81F69 /* 75Soft */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D0AB7A6D2DF0DDE500A81F69 /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */,
+				D0BFFB562DF247620026B46D /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */,
 			);
 			path = 75Soft;
 			sourceTree = "<group>";

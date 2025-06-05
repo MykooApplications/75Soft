@@ -22,11 +22,13 @@ class DailyEntry {
 }
 
 @Model
-class ChallengeState {
+final class ChallengeState {
     var startDate: Date
     var currentDay: Int
     var streakCount: Int
     var lastCompletedDate: Date?
+    
+    var resetCount: Int = 0 // ✅ Add this line
 
     init(startDate: Date) {
         self.startDate = startDate
@@ -35,4 +37,3 @@ class ChallengeState {
         self.lastCompletedDate = nil
     }
 }
-
