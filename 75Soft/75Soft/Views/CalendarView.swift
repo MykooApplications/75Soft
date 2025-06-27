@@ -1,10 +1,6 @@
-//
-//  CalendarView.swift
-//  75Soft
-//
-//  Created by Roshan Mykoo on 6/26/25.
-//
 // CalendarView.swift
+// 75Soft
+
 import SwiftUI
 
 /// Represents the status of a day in the calendar
@@ -43,30 +39,25 @@ class CalendarViewModel: ObservableObject {
         generateDays()
     }
 
-    /// Go to previous month
     func prevMonth() {
         displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth
         generateDays()
     }
 
-    /// Go to next month
     func nextMonth() {
         displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth
         generateDays()
     }
 
-    /// Build the `days` array for the grid
     private func generateDays() {
         days.removeAll()
-        guard
-            let monthInterval = calendar.dateInterval(of: .month, for: displayedMonth),
-            let weekday = calendar.dateComponents([.weekday], from: monthInterval.start).weekday
+        guard let monthInterval = calendar.dateInterval(of: .month, for: displayedMonth),
+              let weekday = calendar.dateComponents([.weekday], from: monthInterval.start).weekday
         else { return }
 
-        // How many leading “grayed out” days from the previous month?
         let lead = (weekday - calendar.firstWeekday + 7) % 7
 
-        // 1) Leading days
+        // Leading days
         for offset in 0..<lead {
             let date = calendar.date(
                 byAdding: .day,
@@ -76,7 +67,7 @@ class CalendarViewModel: ObservableObject {
             days.append(makeDay(date: date, belongs: false))
         }
 
-        // 2) Days of the current month
+        // Current month days
         let dayRange = calendar.range(of: .day, in: .month, for: displayedMonth)!
         for day in dayRange {
             let date = calendar.date(
@@ -87,7 +78,7 @@ class CalendarViewModel: ObservableObject {
             days.append(makeDay(date: date, belongs: true))
         }
 
-        // 3) Trailing days to fill out the final week
+        // Trailing days
         while days.count % 7 != 0 {
             let overflow = days.count - lead
             let date = calendar.date(
@@ -99,7 +90,6 @@ class CalendarViewModel: ObservableObject {
         }
     }
 
-    /// Helper to build a `CalendarDay` with the correct DayStatus
     private func makeDay(date: Date, belongs: Bool) -> CalendarDay {
         let key = calendar.startOfDay(for: date)
         let status: DayStatus
@@ -115,23 +105,24 @@ class CalendarViewModel: ObservableObject {
         return CalendarDay(date: date, belongsToDisplayedMonth: belongs, status: status)
     }
 }
+
 /// The interactive calendar view
 struct CalendarView: View {
     @StateObject private var vm: CalendarViewModel
     @State private var showPicker = false
     @State private var selectedDay: CalendarDay?
-    
+
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
     private let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "LLLL yyyy"
         return f
     }()
-    
+
     init(completionByDate: [Date: Bool], startDate: Date?) {
         _vm = StateObject(wrappedValue: CalendarViewModel(completionByDate: completionByDate, startDate: startDate))
     }
-    
+
     var body: some View {
         VStack {
             // Header with navigation
@@ -150,11 +141,15 @@ struct CalendarView: View {
             .sheet(isPresented: $showPicker) {
                 MonthYearPicker(selected: $vm.displayedMonth)
             }
+
             // Days of week header
-            let symbols = calendar.shortWeekdaySymbols
-            HStack { ForEach(symbols, id: \ .self) { Text($0).frame(maxWidth: .infinity) } }
-                .font(.caption)
-            // Grid
+            let symbols = Calendar.current.shortWeekdaySymbols
+            HStack {
+                ForEach(symbols, id: \.self) { Text($0).frame(maxWidth: .infinity) }
+            }
+            .font(.caption)
+
+            // Grid of days
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(vm.days) { day in
                     DayCell(day: day)
@@ -175,8 +170,6 @@ struct CalendarView: View {
 
 // MARK: - Subviews
 
-private var calendar = Calendar.current
-
 struct DayCell: View {
     let day: CalendarDay
     var body: some View {
@@ -192,8 +185,8 @@ struct DayCell: View {
                 .foregroundColor(day.belongsToDisplayedMonth ? .primary : .secondary)
         }
     }
-    
-    func color(for status: DayStatus) -> Color {
+
+    private func color(for status: DayStatus) -> Color {
         switch status {
         case .completed: return .green.opacity(0.6)
         case .missed: return .red.opacity(0.6)
@@ -211,16 +204,11 @@ struct DayDetailView: View {
             Text(day.date, style: .date)
                 .font(.headline)
             switch day.status {
-            case .completed:
-                Text("All tasks completed")
-            case .missed:
-                Text("Tasks missed")
-            case .future:
-                Text("Future date")
-            case .reset:
-                Text("Challenge reset day")
-            default:
-                Text("No data")
+            case .completed: Text("All tasks completed")
+            case .missed: Text("Tasks missed")
+            case .future: Text("Future date")
+            case .reset: Text("Challenge reset day")
+            default: Text("No data")
             }
             Spacer()
         }
@@ -230,34 +218,29 @@ struct DayDetailView: View {
 
 struct MonthYearPicker: View {
     @Binding var selected: Date
-    @Environment(\.presentationMode) var mode
+    @Environment(\.presentationMode) private var mode
     private let calendar = Calendar.current
     @State private var year: Int
     @State private var monthIndex: Int
-    
+
     init(selected: Binding<Date>) {
         _selected = selected
         let comps = calendar.dateComponents([.year, .month], from: selected.wrappedValue)
         _year = State(initialValue: comps.year ?? calendar.component(.year, from: Date()))
         _monthIndex = State(initialValue: (comps.month ?? 1) - 1)
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Picker("Month", selection: $monthIndex) {
-                    ForEach(0..<12) { idx in
+                    ForEach(0..<12, id: \.self) { idx in
                         Text(calendar.monthSymbols[idx]).tag(idx)
                     }
                 }
-                // Compute once:
-                let currentYear = calendar.component(.year, from: Date())
-
                 Picker("Year", selection: $year) {
-                    ForEach((currentYear - 5)...(currentYear + 5), id: \.self) { yr in
-                        // Use String(yr) so SwiftUI shows exactly “2025” without separators
-                        Text(String(yr))
-                            .tag(yr)
+                    ForEach((calendar.component(.year, from: Date())-5)...(calendar.component(.year, from: Date())+5), id: \.self) { yr in
+                        Text(String(yr)).tag(yr)
                     }
                 }
             }

@@ -8,12 +8,14 @@ import SwiftData
 struct HistoryView: View {
     @Environment(\.modelContext) private var modelContext
     
+    // Fetch daily entries sorted by date
     @Query(sort: [ SortDescriptor(\DailyEntry.date, order: .forward) ])
     private var entries: [DailyEntry]
     
     @Query private var state: [ChallengeState]
     
     private var challengeState: ChallengeState? { state.first }
+    
     // MARK: - Computed Properties
     
     private var currentStreak: Int {
@@ -32,15 +34,14 @@ struct HistoryView: View {
     
     private var completionByDate: [Date: Bool] {
         Dictionary(
-            uniqueKeysWithValues:
-                entries.map { entry in
-                    let day = Calendar.current.startOfDay(for: entry.date)
-                    let done = entry.waterCompleted &&
-                    entry.pagesRead &&
-                    entry.dietClean &&
-                    entry.workoutDone
-                    return (day, done)
-                }
+            uniqueKeysWithValues: entries.map { entry in
+                let day = Calendar.current.startOfDay(for: entry.date)
+                let done = entry.waterCompleted &&
+                entry.pagesRead &&
+                entry.dietClean &&
+                entry.workoutDone
+                return (day, done)
+            }
         )
     }
     
@@ -64,15 +65,16 @@ struct HistoryView: View {
     private var taskRates: [(task: String, rate: Double)] {
         let totalDays = entries.count
         guard totalDays > 0 else { return [] }
+        
         let waterRate   = Double(entries.filter { $0.waterCompleted }.count) / Double(totalDays)
-        let readRate    = Double(entries.filter { $0.pagesRead }.count)     / Double(totalDays)
-        let dietRate    = Double(entries.filter { $0.dietClean }.count)     / Double(totalDays)
-        let workoutRate = Double(entries.filter { $0.workoutDone }.count)   / Double(totalDays)
+        let readRate    = Double(entries.filter { $0.pagesRead }.count) / Double(totalDays)
+        let dietRate    = Double(entries.filter { $0.dietClean }.count) / Double(totalDays)
+        let workoutRate = Double(entries.filter { $0.workoutDone }.count) / Double(totalDays)
         
         return [
-            ("💧 Water",   waterRate),
-            ("📖 Read",    readRate),
-            ("🥗 Diet",    dietRate),
+            ("💧 Water", waterRate),
+            ("📖 Read", readRate),
+            ("🥗 Diet", dietRate),
             ("🏃‍♂️ Workout", workoutRate)
         ]
     }
@@ -106,50 +108,44 @@ struct HistoryView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                
+                // Stats Cards
                 // Stats Cards
                 HStack(spacing: 16) {
-                    StatCard(
-                        icon: "flame.fill",
-                        title: "Current Streak",
-                        value: "\(currentStreak)"
-                    )
-                    StatCard(
-                        icon: "checkmark.seal.fill",
-                        title: "Total Completed",
-                        value: "\(totalCompleted)"
-                    )
+                    StatCard(icon: "flame.fill", title: "Current Streak", value: "\(currentStreak)")
+                        .frame(maxWidth: .infinity)               // fill half the screen
+                        .aspectRatio(1.5, contentMode: .fill)      // wider than tall
+
+                    StatCard(icon: "checkmark.seal.fill", title: "Total Completed", value: "\(totalCompleted)")
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1.5, contentMode: .fill)
                 }
                 .padding(.horizontal)
                 
-                // Toggle
-                Picker("View", selection: $selectedView) {
-                    ForEach(ViewType.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
+                // Toggle + Calendar/Charts
+                VStack() {
+                    Picker("View", selection: $selectedView) {
+                        ForEach(ViewType.allCases) { tab in
+                            Text(tab.rawValue).tag(tab)
+                        }
                     }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
-                
-                // Dynamic Content
-                Group {
+                    .pickerStyle(SegmentedPickerStyle())
+                    
                     if selectedView == .calendar, let challengeStart = challengeState?.startDate {
                         CalendarView(
                             completionByDate: completionByDate,
                             startDate: challengeStart
                         )
-                        .frame(height: 350)
+                        .frame(height: 250, alignment: .top)
                     } else {
                         ChartsView(streakTrend: streakTrend)
-                            .frame(height: 300)
+                            .frame(height: 250)
                     }
                 }
                 .padding(.horizontal)
                 
                 // Task Insights
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Task Insights")
-                        .font(.headline)
+                    Text("Task Insights").font(.headline)
                     ForEach(taskRates, id: \.task) { insight in
                         HStack {
                             Text(insight.task)
@@ -162,8 +158,7 @@ struct HistoryView: View {
                 
                 // Achievements
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Achievements")
-                        .font(.headline)
+                    Text("Achievements").font(.headline)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(badges) { badge in
@@ -191,12 +186,9 @@ struct StatCard: View {
     
     var body: some View {
         VStack {
-            Image(systemName: icon)
-                .font(.title)
-            Text(title)
-                .font(.caption)
-            Text(value)
-                .font(.title2).bold()
+            Image(systemName: icon).font(.title)
+            Text(title).font(.caption)
+            Text(value).font(.title2).bold()
         }
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
@@ -204,7 +196,6 @@ struct StatCard: View {
         .shadow(radius: 1)
     }
 }
-
 
 struct ChartsView: View {
     let streakTrend: [Int]
@@ -231,8 +222,7 @@ struct BadgeView: View {
             Image(systemName: badge.unlocked ? "award.fill" : "lock.fill")
                 .font(.largeTitle)
                 .foregroundColor(badge.unlocked ? .yellow : .gray)
-            Text(badge.title)
-                .font(.caption)
+            Text(badge.title).font(.caption)
         }
         .padding()
         .background(Color(UIColor.systemBackground))
@@ -241,4 +231,11 @@ struct BadgeView: View {
     }
 }
 
-
+// Preview
+struct HistoryView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationStack {
+            HistoryView()
+        }
+    }
+}
