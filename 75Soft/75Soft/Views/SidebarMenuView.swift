@@ -1,9 +1,3 @@
-//
-//  SidebarMenuView.swift
-//  75Soft
-//
-//  Created by Roshan Mykoo on 6/5/25.
-//
 import SwiftUI
 
 struct SidebarMenuView: View {
@@ -11,7 +5,6 @@ struct SidebarMenuView: View {
     let currentDay: Int
     let resetCount: Int
     @Binding var showSidebar: Bool
-    @Binding var showAboutAlert: Bool
     let onSelect: (SidebarDestination) -> Void
 
     var projectedEndDate: Date {
@@ -29,7 +22,9 @@ struct SidebarMenuView: View {
                 .bold()
                 .padding(.top, 40)
 
-            Section(header: Text("CHALLENGE OVERVIEW").font(.caption).foregroundColor(.gray)) {
+            Section(header: Text("CHALLENGE OVERVIEW")
+                        .font(.caption)
+                        .foregroundColor(.gray)) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Start Date: \(formatted(startDate))")
                     Text("End Date: \(formatted(projectedEndDate))")
@@ -38,28 +33,30 @@ struct SidebarMenuView: View {
                     Text("Completion: \(completionPercentage)%")
                 }
                 .padding()
-                .background(Color.white)
+                .background(Color(UIColor.systemBackground))
                 .cornerRadius(12)
             }
 
             Divider()
 
-            Button(action: {
+            Button {
+                withAnimation { showSidebar = false }
                 onSelect(.history)
-            }) {
+            } label: {
                 Label("History", systemImage: "calendar")
             }
 
-            Button(action: {
+            Button {
+                withAnimation { showSidebar = false }
                 onSelect(.settings)
-            }) {
+            } label: {
                 Label("Settings", systemImage: "gear")
             }
 
-            Button(action: {
+            Button {
                 withAnimation { showSidebar = false }
-                showAboutAlert = true
-            }) {
+                onSelect(.about)
+            } label: {
                 Label("About", systemImage: "info.circle")
             }
 

@@ -27,13 +27,13 @@ final class ChallengeState {
     var currentDay: Int
     var streakCount: Int
     var lastCompletedDate: Date?
-    
-    var resetCount: Int = 0 // ✅ Add this line
+    var resetCount: Int
 
     init(startDate: Date) {
         self.startDate = startDate
-        self.currentDay = 1
+        self.currentDay = 0          // was 1, now 0
         self.streakCount = 0
         self.lastCompletedDate = nil
+        self.resetCount = 0
     }
 }

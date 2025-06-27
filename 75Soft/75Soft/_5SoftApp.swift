@@ -10,10 +10,22 @@ import SwiftData
 
 @main
 struct Soft75App: App {
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .modelContainer(for: [DailyEntry.self, ChallengeState.self])
+            if hasCompletedOnboarding {
+                ContentView()
+            } else {
+                OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
+            }
         }
+        // ← Inject your SwiftData model here:
+        .modelContainer(
+            for: [
+                DailyEntry.self,
+                ChallengeState.self
+            ]
+        )
     }
 }

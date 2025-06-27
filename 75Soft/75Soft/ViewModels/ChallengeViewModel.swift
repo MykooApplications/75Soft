@@ -56,8 +56,8 @@ class ChallengeViewModel {
     }
     
     func resetChallenge() {
+        state.currentDay = 0          // reset to 0
         state.streakCount = 0
-        state.currentDay = 0 // ⬅️ change from 1 to 0
         state.lastCompletedDate = nil
         state.startDate = Date()
         state.resetCount += 1
@@ -79,18 +79,17 @@ class ChallengeViewModel {
     
     private func checkCompletion() {
         let allDone = entry.waterCompleted && entry.pagesRead && entry.dietClean && entry.workoutDone
-        
         guard allDone else { return }
         
-        //        if let last = state.lastCompletedDate, Calendar.current.isDateInToday(last) {
-        //            return
-        //        }
-        WidgetCenter.shared.reloadAllTimelines()
-        state.streakCount += 1
-        state.currentDay += 1
-        state.lastCompletedDate = Date()
+        // Only bump once per day
+        if let last = state.lastCompletedDate, Calendar.current.isDateInToday(last) {
+            return
+        }
         
-        print("📤 Sending data to widget")
+        // First time all tasks done → currentDay goes from 0 to 1
+        state.currentDay += 1
+        state.streakCount += 1
+        state.lastCompletedDate = Date()
         
         writeWidgetData(
             currentDay: state.currentDay,
