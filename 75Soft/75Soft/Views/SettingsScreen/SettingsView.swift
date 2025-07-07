@@ -56,14 +56,36 @@ struct SettingsView: View {
             // 2. Notifications
             Section(header: Text("Notifications")) {
                 Toggle("Daily Reminders", isOn: $dailyReminderEnabled)
+                    .onChange(of: dailyReminderEnabled) { newValue in
+                        NotificationManager.shared.requestAuthorization { granted in
+                            guard granted else {
+                                dailyReminderEnabled = false
+                                return
+                            }
+                            if newValue {
+                                let components = Calendar.current.dateComponents([.hour, .minute], from: dailyReminderTime)
+                                NotificationManager.shared.scheduleDailyReminder(
+                                    hour: components.hour!,
+                                    minute: components.minute!
+                                )
+                            } else {
+                                NotificationManager.shared.cancelDailyReminder()
+                            }
+                        }
+                    }
+
                 if dailyReminderEnabled {
                     DatePicker(
                         "Reminder Time",
                         selection: $dailyReminderTime,
                         displayedComponents: .hourAndMinute
                     )
+                    .onChange(of: dailyReminderTime) { newTime in
+                        let comps = Calendar.current.dateComponents([.hour, .minute], from: newTime)
+                        NotificationManager.shared.scheduleDailyReminder(hour: comps.hour!, minute: comps.minute!)
+                    }
                 }
-                Toggle("Milestone/Streak Notifications", isOn: $milestoneReminderEnabled)
+               // Toggle("Milestone/Streak Notifications", isOn: $milestoneReminderEnabled)
             }
 
             // 3. Reset Options
@@ -112,24 +134,43 @@ struct SettingsView: View {
             // 5. Advanced / Developer Options
             #if DEBUG
             Section(header: Text("Developer Options")) {
-                Toggle("Show Developer Options", isOn: $showDeveloperOptions)
-                if showDeveloperOptions {
-                    HStack {
-                        Text("App Version")
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")
-                    }
-                    HStack {
-                        Text("Build Number")
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?")
-                    }
-                    Button("Export Logs") {
-                        // TODO: implement export
-                    }
-                }
-            }
-            #endif
+                            Toggle("Show Developer Options", isOn: $showDeveloperOptions)
+                            if showDeveloperOptions {
+                                HStack {
+                                    Text("App Version")
+                                    Spacer()
+                                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")
+                                }
+                                HStack {
+                                    Text("Build Number")
+                                    Spacer()
+                                    Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?")
+                                }
+                                Button("Test Daily Reminder Now") {
+                                    let comps = Calendar.current.dateComponents([.hour, .minute], from: dailyReminderTime)
+                                    NotificationManager.shared.scheduleDailyReminder(
+                                        hour: comps.hour ?? 9,
+                                        minute: comps.minute ?? 0
+                                    )
+                                }
+                                Button("Trigger Milestone (7-day)") {
+                                    NotificationManager.shared.scheduleMilestoneNotification(onDay: 7)
+                                }
+                                Button("Clear All Notifications") {
+                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                                }
+                                Button("Force Widget Refresh") {
+                                    WidgetCenter.shared.reloadAllTimelines()
+                                }
+                                Button("Jump to Day 74 (Test Completed Challenge)") {
+                                    viewModel.jumpToDay(74)
+                                }
+                                Button("Export Logs") {
+                                    // TODO: implement export
+                                }
+                            }
+                        }
+#endif
 
             // 6. Footer
             Section {

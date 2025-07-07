@@ -27,36 +27,36 @@ struct CalendarDay: Identifiable {
 class CalendarViewModel: ObservableObject {
     @Published var displayedMonth: Date
     @Published var days: [CalendarDay] = []
-
+    
     private let calendar = Calendar.current
     private let completionByDate: [Date: Bool]
     private let startDate: Date?
-
+    
     init(completionByDate: [Date: Bool], startDate: Date?) {
         self.completionByDate = completionByDate
         self.startDate = startDate
         self.displayedMonth = calendar.startOfDay(for: Date())
         generateDays()
     }
-
+    
     func prevMonth() {
         displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth
         generateDays()
     }
-
+    
     func nextMonth() {
         displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth
         generateDays()
     }
-
+    
     private func generateDays() {
         days.removeAll()
         guard let monthInterval = calendar.dateInterval(of: .month, for: displayedMonth),
               let weekday = calendar.dateComponents([.weekday], from: monthInterval.start).weekday
         else { return }
-
+        
         let lead = (weekday - calendar.firstWeekday + 7) % 7
-
+        
         // Leading days
         for offset in 0..<lead {
             let date = calendar.date(
@@ -66,7 +66,7 @@ class CalendarViewModel: ObservableObject {
             )!
             days.append(makeDay(date: date, belongs: false))
         }
-
+        
         // Current month days
         let dayRange = calendar.range(of: .day, in: .month, for: displayedMonth)!
         for day in dayRange {
@@ -77,7 +77,7 @@ class CalendarViewModel: ObservableObject {
             )!
             days.append(makeDay(date: date, belongs: true))
         }
-
+        
         // Trailing days
         while days.count % 7 != 0 {
             let overflow = days.count - lead
@@ -89,7 +89,7 @@ class CalendarViewModel: ObservableObject {
             days.append(makeDay(date: date, belongs: false))
         }
     }
-
+    
     private func makeDay(date: Date, belongs: Bool) -> CalendarDay {
         let key = calendar.startOfDay(for: date)
         let status: DayStatus
@@ -111,18 +111,18 @@ struct CalendarView: View {
     @StateObject private var vm: CalendarViewModel
     @State private var showPicker = false
     @State private var selectedDay: CalendarDay?
-
+    
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
     private let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "LLLL yyyy"
         return f
     }()
-
+    
     init(completionByDate: [Date: Bool], startDate: Date?) {
         _vm = StateObject(wrappedValue: CalendarViewModel(completionByDate: completionByDate, startDate: startDate))
     }
-
+    
     var body: some View {
         VStack {
             // Header with navigation
@@ -141,14 +141,14 @@ struct CalendarView: View {
             .sheet(isPresented: $showPicker) {
                 MonthYearPicker(selected: $vm.displayedMonth)
             }
-
+            
             // Days of week header
             let symbols = Calendar.current.shortWeekdaySymbols
             HStack {
                 ForEach(symbols, id: \.self) { Text($0).frame(maxWidth: .infinity) }
             }
             .font(.caption)
-
+            
             // Grid of days
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(vm.days) { day in
@@ -162,11 +162,32 @@ struct CalendarView: View {
                 if g.translation.width > 50 { vm.prevMonth() }
             })
         }
-        .sheet(item: $selectedDay) { day in
-            DayDetailView(day: day)
+        .alert(item: $selectedDay) { day in
+            Alert(
+                title: Text(DateFormatter.localizedString(
+                    from: day.date,
+                    dateStyle: .medium,
+                    timeStyle: .none
+                )),
+                message: Text(detailText(for: day.status)),
+                dismissButton: .default(Text("OK")) {
+                    selectedDay = nil
+                }
+            )
+        }
+    }
+    
+    private func detailText(for status: DayStatus) -> String {
+        switch status {
+        case .completed: return "All tasks completed."
+        case .missed:    return "Tasks were missed on this day."
+        case .future:    return "Future date - no data yet."
+        case .reset:     return "This was a challenge reset day."
+        default:         return "No data available."
         }
     }
 }
+
 
 // MARK: - Subviews
 
@@ -185,7 +206,7 @@ struct DayCell: View {
                 .foregroundColor(day.belongsToDisplayedMonth ? .primary : .secondary)
         }
     }
-
+    
     private func color(for status: DayStatus) -> Color {
         switch status {
         case .completed: return .green.opacity(0.6)
@@ -222,14 +243,14 @@ struct MonthYearPicker: View {
     private let calendar = Calendar.current
     @State private var year: Int
     @State private var monthIndex: Int
-
+    
     init(selected: Binding<Date>) {
         _selected = selected
         let comps = calendar.dateComponents([.year, .month], from: selected.wrappedValue)
         _year = State(initialValue: comps.year ?? calendar.component(.year, from: Date()))
         _monthIndex = State(initialValue: (comps.month ?? 1) - 1)
     }
-
+    
     var body: some View {
         NavigationView {
             Form {

@@ -73,12 +73,6 @@ struct ContentView: View {
                     }
                     .opacity(showSidebar ? 0 : 1)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Reset") {
-                        showResetConfirmation = true
-                    }
-                    .opacity(showSidebar ? 0 : 1)
-                }
             }
             .alert("About 75Soft", isPresented: $showAboutAlert) {
                 Button("OK", role: .cancel) {}
