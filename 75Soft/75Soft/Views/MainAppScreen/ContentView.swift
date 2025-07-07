@@ -47,6 +47,7 @@ struct ContentView: View {
                         currentDay: viewModel?.state.currentDay ?? 0,
                         resetCount: viewModel?.state.resetCount ?? 0,
                         showSidebar: $showSidebar,
+                        showAboutAlert: $showAboutAlert,
                         onSelect: handleSidebarSelection
                     )
                     .frame(width: 280)
@@ -95,30 +96,37 @@ struct ContentView: View {
     
     // MARK: - Main content
     private var mainContent: some View {
-        VStack {
-            Spacer()
-            
+        VStack(spacing: 0) {
+            Spacer(minLength: 40)    // push down a bit from nav bar
+
             if let vm = viewModel {
-                CircularProgressView(currentDay: vm.state.currentDay)
-                    .frame(width: 300, height: 300)
+                // ——— Centered Circle ———
+                HStack {
+                    Spacer()
+                    CircularProgressView(currentDay: vm.state.currentDay)
+                        .frame(width: 300, height: 300)
+                    Spacer()
+                }
+                .padding(.bottom, 24)
+
                 Spacer()
-                ChecklistView(viewModel: vm)
+                // ——— Centered Checklist ———
+                HStack {
+                    Spacer()
+                    ChecklistView(viewModel: vm)
+                        .frame(maxWidth: 360)   // caps list width so it stays centered
+                    Spacer()
+                }
+                .padding(.bottom, 40)
             } else {
                 Button("Start Today", action: startToday)
                     .buttonStyle(.borderedProminent)
+                    .font(.title2)
             }
-            
+
             Spacer()
         }
-        .padding()
-        .alert("Reset Challenge?", isPresented: $showResetConfirmation) {
-            Button("Reset", role: .destructive) {
-                viewModel?.resetChallenge()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This will erase today's progress and reset your streak. Are you sure?")
-        }
+        .padding(.horizontal)   // still keep a little gutter
     }
     
     // MARK: - Setup

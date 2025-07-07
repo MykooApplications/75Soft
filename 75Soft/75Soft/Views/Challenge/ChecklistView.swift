@@ -11,18 +11,22 @@ import WidgetKit
 
 struct ChecklistView: View {
     @ObservedObject var viewModel: ChallengeViewModel
+    // adjust until your longest title fits in one line
+    let labelWidth: CGFloat = 240
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             ForEach(viewModel.tasks.sorted(by: { $0.key < $1.key }), id: \.key) { title, done in
-                HStack {
-                    Button(action: {
+                HStack(spacing: 16) {
+                    // your circle button
+                    Button {
                         viewModel.toggle(title)
-                    }) {
+                    } label: {
                         ZStack {
                             Circle()
-                                .strokeBorder(done ? Color.accentColor : Color.gray, lineWidth: 2)
-                                .frame(width: 28, height: 28)
+                                .strokeBorder(done ? Color.accentColor : Color.gray,
+                                              lineWidth: 3)
+                                .frame(width: 32, height: 32)
                             if done {
                                 Circle()
                                     .fill(Color.accentColor)
@@ -31,23 +35,20 @@ struct ChecklistView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .disabled(done) // tasks cannot be unchecked
+                    .disabled(done)
 
+                    // fixed-width label
                     Text(title)
-                        .font(.body)
-                        .foregroundColor(.primary)
-                        .padding(.leading, 8)
+                        .font(.title3)
+                        .frame(width: labelWidth, alignment: .leading)
 
                     Spacer()
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 16)
             }
         }
-        .frame(maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom, 40)
     }
 }
-
 //// Preview
 //struct ChecklistView_Previews: PreviewProvider {
 //    static var previews: some View {
