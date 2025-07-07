@@ -32,6 +32,20 @@ struct HistoryView: View {
         .count
     }
     
+    private var bestStreak: Int {
+        var maxStreak = 0
+        var running = 0
+        for entry in entries.sorted(by: { $0.date < $1.date }) {
+            if entry.waterCompleted && entry.pagesRead && entry.dietClean && entry.workoutDone {
+                running += 1
+                maxStreak = max(maxStreak, running)
+            } else {
+                running = 0
+            }
+        }
+        return maxStreak
+    }
+    
     private var completionByDate: [Date: Bool] {
         Dictionary(
             uniqueKeysWithValues: entries.map { entry in
@@ -113,11 +127,14 @@ struct HistoryView: View {
                 HStack(spacing: 16) {
                     StatCard(icon: "flame.fill", title: "Current Streak", value: "\(currentStreak)")
                         .frame(maxWidth: .infinity)               // fill half the screen
-                        .aspectRatio(1.5, contentMode: .fill)      // wider than tall
-
+                        .aspectRatio(1.5, contentMode: .fit)      // wider than tall
+                    
                     StatCard(icon: "checkmark.seal.fill", title: "Total Completed", value: "\(totalCompleted)")
                         .frame(maxWidth: .infinity)
-                        .aspectRatio(1.5, contentMode: .fill)
+                        .aspectRatio(1.5, contentMode: .fit)
+                    StatCard(icon: "star.fill", title: "Best Streak", value: "\(bestStreak)")
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1.5, contentMode: .fit)
                 }
                 .padding(.horizontal)
                 

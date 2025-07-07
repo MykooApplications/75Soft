@@ -36,12 +36,12 @@ struct ContentView: View {
                 mainContent
                     .disabled(showSidebar)
                     .blur(radius: showSidebar ? 4 : 0)
-
+                
                 if showSidebar {
                     Color.black.opacity(0.001)
                         .ignoresSafeArea()
                         .onTapGesture { toggleSidebar() }
-
+                    
                     SidebarMenuView(
                         startDate: viewModel?.state.startDate ?? Date(),
                         currentDay: viewModel?.state.currentDay ?? 0,
@@ -54,6 +54,16 @@ struct ContentView: View {
                     .zIndex(1)
                 }
             }
+            .gesture(
+                DragGesture().onEnded { value in
+                    let threshold: CGFloat = 80
+                    if value.translation.width > threshold {
+                        withAnimation { showSidebar = true }
+                    } else if value.translation.width < -threshold {
+                        withAnimation { showSidebar = false }
+                    }
+                }
+            )
             .navigationDestination(for: SidebarDestination.self) { destination in
                 switch destination {
                 case .settings:
