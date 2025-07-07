@@ -55,7 +55,7 @@
 		D0BFFB562DF247620026B46D /* Exceptions for "75Soft" folder in "Soft75widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Models/SharedWidgetData.swift,
+				Shared/SharedWidgetData.swift,
 			);
 			target = D0AB7A442DF0ABB500A81F69 /* Soft75widgetExtension */;
 		};
