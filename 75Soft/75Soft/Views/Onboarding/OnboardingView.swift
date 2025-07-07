@@ -1,4 +1,8 @@
-// OnboardingFlow.swift
+//  OnboardingView.swift
+//  75Soft
+//
+//  Created by Roshan Mykoo on 6/5/25.
+//
 import SwiftUI
 
 /// ViewModel for onboarding flow
@@ -12,25 +16,44 @@ class OnboardingViewModel: ObservableObject {
 struct OnboardingView: View {
     @Binding var hasCompletedOnboarding: Bool
     @StateObject private var viewModel = OnboardingViewModel()
+
     var body: some View {
-        TabView(selection: $viewModel.currentPage) {
-            IntroPage()
-                .tag(0)
-            TasksPage()
-                .tag(1)
-            MarkCompletePage()
-                .tag(2)
-            StreakPage()
-                .tag(3)
-            ResetPage()
-                .tag(4)
-            MotivationalPage() {
-                viewModel.hasCompletedOnboarding = true
+        ZStack(alignment: .topTrailing) {
+            TabView(selection: $viewModel.currentPage) {
+                IntroPage()
+                    .tag(0)
+                TasksPage()
+                    .tag(1)
+                MarkCompletePage()
+                    .tag(2)
+                StreakPage()
+                    .tag(3)
+                ResetPage()
+                    .tag(4)
+                MotivationalPage {
+                    // Complete onboarding
+                    hasCompletedOnboarding = true
+                }
+                .tag(5)
             }
-            .tag(5)
+            .tabViewStyle(PageTabViewStyle())
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+
+            // Skip Button
+            Button("Skip") {
+                // Jump to last page
+                withAnimation {
+                    viewModel.currentPage = viewModel.totalPages - 1
+                }
+            }
+            .padding(.top, 16)
+            .padding(.trailing, 20)
         }
-        .tabViewStyle(PageTabViewStyle())
-        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+        .onChange(of: viewModel.hasCompletedOnboarding) { newValue in
+            if newValue {
+                hasCompletedOnboarding = true
+            }
+        }
     }
 }
 
