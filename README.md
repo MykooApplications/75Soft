@@ -51,10 +51,70 @@
 <img src="docs/screenshots/main.png" width=50%>
 <img src="docs/screenshots/main.png" width=50%>
 
-<!--  Screenshots go here.  
-> Add images under `docs/screenshots/` and reference them like below:
+Installation
+	1.	Clone the repository:
 
-```markdown
-![Main Screen](docs/screenshots/main.png)
-![History Calendar](docs/screenshots/history.png) -->
+git clone https://github.com/your-username/75Soft.git
+cd 75Soft
+
+
+	2.	Open in Xcode 15 or later:
+
+open 75Soft.xcodeproj
+
+
+	3.	Select the App or Widget target and run on iOS 16 or later.
+
+Usage
+	1.	On first launch, complete or skip the onboarding screens.
+	2.	Tap Start Today to insert today’s entry.
+	3.	Tap each circle to mark a task complete. Completing all tasks advances the streak.
+	4.	Add “75Soft” widgets to your Home Screen to view progress at a glance.
+	5.	Access History via the sidebar menu for calendar and chart insights.
+	6.	Configure Settings for notifications, reset options, and developer tools.
+
+Architecture Diagram
+
+ContentView (SwiftUI)
+      │
+      ▼
+ChallengeViewModel (ObservableObject)
+      │
+DailyEntry & ChallengeState (SwiftData Models)
+      │
+WidgetKit ↔ JSON file via App Group
+
+	•	Views bind to ViewModels which manage state and persistence.
+	•	Widgets read shared JSON snapshot and update automatically.
+
+Contributing
+	1.	Fork the repository.
+	2.	Create a feature branch:
+
+git checkout -b my-feature
+
+
+	3.	Commit your changes:
+
+git commit -m "Add feature"
+
+
+	4.	Push to your branch:
+
+git push origin my-feature
+
+
+	5.	Open a Pull Request.
+
+Please follow the existing code style and include tests where appropriate.
+
+License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+Contact
+
+Roshan Mykoo
+Email: your.email@example.com
+GitHub: github.com/your-username/75Soft
 
