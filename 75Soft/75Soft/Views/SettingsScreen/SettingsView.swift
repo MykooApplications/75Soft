@@ -11,19 +11,36 @@ import SwiftData
 
 struct SettingsView: View {
     @ObservedObject var viewModel: ChallengeViewModel
-
+    @Environment(\.modelContext) private var modelContext: ModelContext
+    
+    
     // MARK: - AppStorage Keys
     @AppStorage("dailyReminderEnabled") private var dailyReminderEnabled: Bool = false
     @AppStorage("milestoneReminderEnabled") private var milestoneReminderEnabled: Bool = false
     @AppStorage("dailyReminderTime") private var dailyReminderTime: Date = Date()
     @AppStorage("showDeveloperOptions") private var showDeveloperOptions: Bool = false
-
+    @AppStorage("forgiveMissDay") private var forgiveDayEnabled: Bool = false
+    @AppStorage("forgiveMissTask") private var forgiveTaskEnabled: Bool = false
+    @Query private var state: [ChallengeState]
+    
+    /// Always returns the one-and-only ChallengeState (creates one if none exists)
+    private var challenge: ChallengeState {
+        if let existing = state.first {
+            return existing
+        } else {
+            let newOne = ChallengeState(startDate: Date())
+            modelContext.insert(newOne)
+            try? modelContext.save()
+            return newOne
+        }
+    }
+    
     // MARK: - Alert State
     @State private var showResetAlert = false
     @State private var showClearAlert = false
     @State private var showOnboarding = false
     @State private var showLogicInfo = false
-
+    
     var body: some View {
         Form {
             // 1. Profile & Challenge Info
@@ -52,7 +69,7 @@ struct SettingsView: View {
                     Text("This will erase all progress and reset your streak to zero.")
                 }
             }
-
+            
             // 2. Notifications
             Section(header: Text("Notifications")) {
                 Toggle("Daily Reminders", isOn: $dailyReminderEnabled)
@@ -73,7 +90,7 @@ struct SettingsView: View {
                             }
                         }
                     }
-
+                
                 if dailyReminderEnabled {
                     DatePicker(
                         "Reminder Time",
@@ -85,9 +102,32 @@ struct SettingsView: View {
                         NotificationManager.shared.scheduleDailyReminder(hour: comps.hour!, minute: comps.minute!)
                     }
                 }
-               // Toggle("Milestone/Streak Notifications", isOn: $milestoneReminderEnabled)
+                // Toggle("Milestone/Streak Notifications", isOn: $milestoneReminderEnabled)
             }
-
+            
+            //Difficulty
+            Section(header: Text("Difficulty")) {
+                Toggle("Forgive Missed Day",
+                       isOn: Binding(
+                        get: { challenge.forgiveMissedDay },
+                        set: { newValue in
+                            challenge.forgiveMissedDay = newValue
+                            try? modelContext.save()
+                        }
+                       )
+                )
+                
+                Toggle("Forgive Missed Task",
+                       isOn: Binding(
+                        get: { challenge.forgiveMissedTask },
+                        set: { newValue in
+                            challenge.forgiveMissedTask = newValue
+                            try? modelContext.save()
+                        }
+                       )
+                )
+            }
+            
             // 3. Reset Options
             Section(header: Text("Reset Options")) {
                 Button(role: .destructive) {
@@ -109,7 +149,7 @@ struct SettingsView: View {
                     Text("This will remove all stored data and cannot be undone.")
                 }
             }
-
+            
             // 4. Learn About 75Soft
             Section(header: Text("Learn About 75Soft")) {
                 NavigationLink("Show Onboarding", isActive: $showOnboarding) {
@@ -130,48 +170,48 @@ struct SettingsView: View {
                     .padding()
                 }
             }
-
+            
             // 5. Advanced / Developer Options
-            #if DEBUG
+#if DEBUG
             Section(header: Text("Developer Options")) {
-                            Toggle("Show Developer Options", isOn: $showDeveloperOptions)
-                            if showDeveloperOptions {
-                                HStack {
-                                    Text("App Version")
-                                    Spacer()
-                                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")
-                                }
-                                HStack {
-                                    Text("Build Number")
-                                    Spacer()
-                                    Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?")
-                                }
-                                Button("Test Daily Reminder Now") {
-                                    let comps = Calendar.current.dateComponents([.hour, .minute], from: dailyReminderTime)
-                                    NotificationManager.shared.scheduleDailyReminder(
-                                        hour: comps.hour ?? 9,
-                                        minute: comps.minute ?? 0
-                                    )
-                                }
-                                Button("Trigger Milestone (7-day)") {
-                                    NotificationManager.shared.scheduleMilestoneNotification(onDay: 7)
-                                }
-                                Button("Clear All Notifications") {
-                                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-                                }
-                                Button("Force Widget Refresh") {
-                                    WidgetCenter.shared.reloadAllTimelines()
-                                }
-                                Button("Jump to Day 74 (Test Completed Challenge)") {
-                                    viewModel.jumpToDay(74)
-                                }
-                                Button("Export Logs") {
-                                    // TODO: implement export
-                                }
-                            }
-                        }
+                Toggle("Show Developer Options", isOn: $showDeveloperOptions)
+                if showDeveloperOptions {
+                    HStack {
+                        Text("App Version")
+                        Spacer()
+                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")
+                    }
+                    HStack {
+                        Text("Build Number")
+                        Spacer()
+                        Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?")
+                    }
+                    Button("Test Daily Reminder Now") {
+                        let comps = Calendar.current.dateComponents([.hour, .minute], from: dailyReminderTime)
+                        NotificationManager.shared.scheduleDailyReminder(
+                            hour: comps.hour ?? 9,
+                            minute: comps.minute ?? 0
+                        )
+                    }
+                    Button("Trigger Milestone (7-day)") {
+                        NotificationManager.shared.scheduleMilestoneNotification(onDay: 7)
+                    }
+                    Button("Clear All Notifications") {
+                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                    }
+                    Button("Force Widget Refresh") {
+                        WidgetCenter.shared.reloadAllTimelines()
+                    }
+                    Button("Jump to Day 74 (Test Completed Challenge)") {
+                        viewModel.jumpToDay(74)
+                    }
+                    Button("Export Logs") {
+                        // TODO: implement export
+                    }
+                }
+            }
 #endif
-
+            
             // 6. Footer
             Section {
                 HStack {
@@ -194,14 +234,14 @@ struct SettingsView_Previews: PreviewProvider {
             let config = ModelConfiguration()
             return try ModelContainer(
                 for: DailyEntry.self,
-                     ChallengeState.self,
+                ChallengeState.self,
                 configurations: config
             )
         } catch {
             fatalError("Failed to create in-memory model container: \(error)")
         }
     }()
-
+    
     static var previews: some View {
         NavigationStack {
             SettingsView(

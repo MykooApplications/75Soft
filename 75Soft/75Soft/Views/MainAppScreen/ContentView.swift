@@ -55,15 +55,17 @@ struct ContentView: View {
                     .zIndex(1)
                 }
             }
-            .gesture(
-                DragGesture().onEnded { value in
-                    let threshold: CGFloat = 80
-                    if value.translation.width > threshold {
-                        withAnimation { showSidebar = true }
-                    } else if value.translation.width < -threshold {
-                        withAnimation { showSidebar = false }
-                    }
-                }
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 20)
+                    .onEnded { value in
+                        let threshold: CGFloat = 80
+                        if value.translation.width > threshold {
+                            withAnimation { showSidebar = true }
+                        } else if value.translation.width < -threshold {
+                            withAnimation { showSidebar = false }
+                        }
+                    },
+                including: .all
             )
             .navigationDestination(for: SidebarDestination.self) { destination in
                 switch destination {
@@ -98,7 +100,7 @@ struct ContentView: View {
     private var mainContent: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 40)    // push down a bit from nav bar
-
+            
             if let vm = viewModel {
                 // ——— Centered Circle ———
                 HStack {
@@ -108,7 +110,7 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding(.bottom, 24)
-
+                
                 Spacer()
                 // ——— Centered Checklist ———
                 HStack {
@@ -123,7 +125,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .font(.title2)
             }
-
+            
             Spacer()
         }
         .padding(.horizontal)   // still keep a little gutter

@@ -80,21 +80,31 @@ class ChallengeViewModel: ObservableObject {
         guard allDone else { return }
         
         // Only increment once per day
-        if let lastDate = state.lastCompletedDate,
-           Calendar.current.isDateInToday(lastDate) {
-            return
+        if let last = state.lastCompletedDate,
+           !Calendar.current.isDateInToday(last) {
+            // if they skipped more than yesterday…
+            if !Calendar.current.isDateInYesterday(last) {
+                // if forgive‐day is ON, just pretend they did yesterday
+                if state.forgiveMissedDay {
+                    state.lastCompletedDate = Calendar.current.date(byAdding: .day, value: -1, to: Date())
+                    save()
+                    return
+                }
+                resetChallenge()
+                return
+            }
+            // otherwise it’s a brand‐new day, so increment streak:
+            state.streakCount += 1
+            state.currentDay += 1
+            state.lastCompletedDate = Date()
+            writeWidgetData(
+                currentDay: state.currentDay,
+                streak: state.streakCount,
+                tasks: tasks
+            )
+            WidgetCenter.shared.reloadAllTimelines()
+            save()
         }
-        
-        state.streakCount += 1
-        state.currentDay += 1
-        state.lastCompletedDate = Date()
-        
-        writeWidgetData(
-            currentDay: state.currentDay,
-            streak: state.streakCount,
-            tasks: tasks
-        )
-        WidgetCenter.shared.reloadAllTimelines()
     }
     
     /// Persist SwiftData context

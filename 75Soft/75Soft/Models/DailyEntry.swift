@@ -28,6 +28,9 @@ final class ChallengeState {
     var streakCount: Int
     var lastCompletedDate: Date?
     var resetCount: Int
+    
+    var forgiveMissedDay: Bool = false
+    var forgiveMissedTask: Bool = false
 
     init(startDate: Date) {
         self.startDate = startDate
