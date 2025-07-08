@@ -47,9 +47,10 @@
 
 ## Screenshots
 
-> Screenshots go here.  
+<!--  Screenshots go here.  
 > Add images under `docs/screenshots/` and reference them like below:
 
 ```markdown
 ![Main Screen](docs/screenshots/main.png)
-![History Calendar](docs/screenshots/history.png)
+![History Calendar](docs/screenshots/history.png) -->
+
