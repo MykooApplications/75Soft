@@ -48,7 +48,7 @@
 ## Screenshots
 <!-- ![Main Screen](docs/screenshots/main.png)
 ![History Calendar](docs/screenshots/history.png) -->
-<img src="docs/screenshots/main.png" width=50%> <img src="docs/screenshots/main.png" width=50%>
+<img src="docs/screenshots/main.png" width=40%> <img src="docs/screenshots/main.png" width=40%>
 
 Installation
 
