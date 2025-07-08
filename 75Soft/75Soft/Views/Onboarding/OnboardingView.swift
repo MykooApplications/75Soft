@@ -6,43 +6,44 @@
 //
 import SwiftUI
 
-/// ViewModel for onboarding flow
+/// Keeps track of where we are in the onboarding and whether we've finished it
 class OnboardingViewModel: ObservableObject {
+    /// Remember in storage if the user has completed onboarding before
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+    /// Which page the user is on right now (0–5)
     @Published var currentPage: Int = 0
+    /// Total number of pages in our flow
     let totalPages = 6
 }
 
-/// Main Onboarding View
+/// The full-screen onboarding flow
 struct OnboardingView: View {
+    /// Binding so we can tell the app when onboarding is done
     @Binding var hasCompletedOnboarding: Bool
+    /// Our view model to drive the pages
     @StateObject private var viewModel = OnboardingViewModel()
-
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
+            // A paging TabView for each onboarding screen
             TabView(selection: $viewModel.currentPage) {
-                IntroPage()
-                    .tag(0)
-                TasksPage()
-                    .tag(1)
-                MarkCompletePage()
-                    .tag(2)
-                StreakPage()
-                    .tag(3)
-                ResetPage()
-                    .tag(4)
+                IntroPage()           .tag(0)  // What is 75Soft?
+                TasksPage()           .tag(1)  // What tasks you'll do
+                MarkCompletePage()    .tag(2)  // How to tap to complete
+                StreakPage()          .tag(3)  // How streaks work
+                ResetPage()           .tag(4)  // How to reset
                 MotivationalPage {
-                    // Complete onboarding
+                    // When they tap "Start", mark onboarding done
                     hasCompletedOnboarding = true
                 }
                 .tag(5)
             }
-            .tabViewStyle(PageTabViewStyle())
-            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-
-            // Skip Button
+            .tabViewStyle(PageTabViewStyle())                      // Swipeable pages
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)) // Dots at bottom
+            
+            // Skip button in top right:
             Button("Skip") {
-                // Jump to last page
+                // Jump straight to the last page with animation
                 withAnimation {
                     viewModel.currentPage = viewModel.totalPages - 1
                 }
@@ -50,31 +51,34 @@ struct OnboardingView: View {
             .padding(.top, 16)
             .padding(.trailing, 20)
         }
-        .onChange(of: viewModel.hasCompletedOnboarding) { newValue in
-            if newValue {
+        // If viewModel itself marks onboarding done (rare), update binding
+        .onChange(of: viewModel.hasCompletedOnboarding) { finished in
+            if finished {
                 hasCompletedOnboarding = true
             }
         }
     }
 }
 
-// MARK: - Individual Pages
+// MARK: - Pages
 
+/// Page 1: Intro
 struct IntroPage: View {
     @State private var animate = false
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
+            // Big heart icon that grows
             Image(systemName: "bolt.heart.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100, height: 100)
+                .resizable().scaledToFit().frame(width: 100, height: 100)
                 .foregroundColor(.accentColor)
                 .scaleEffect(animate ? 1 : 0.6)
                 .opacity(animate ? 1 : 0)
+            // Title text
             Text("Welcome to 75Soft")
                 .font(.largeTitle).bold()
                 .opacity(animate ? 1 : 0)
+            // Description
             Text("Your 75-day discipline challenge for hydration, reading, diet, and exercise.")
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -82,6 +86,7 @@ struct IntroPage: View {
             Spacer()
         }
         .onAppear {
+            // Animate in with a spring effect
             withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) {
                 animate = true
             }
@@ -89,8 +94,10 @@ struct IntroPage: View {
     }
 }
 
+/// Page 2: Tasks list
 struct TasksPage: View {
     @State private var animate = false
+    // Our four tasks
     let tasks = [
         ("💧", "Drink 3L of Water"),
         ("📖", "Read 10 Pages"),
@@ -103,15 +110,14 @@ struct TasksPage: View {
             Text("Daily Tasks")
                 .font(.title).bold()
                 .opacity(animate ? 1 : 0)
+            // Show each task with icon and text
             ForEach(tasks, id: \.1) { icon, title in
                 HStack(spacing: 12) {
-                    Text(icon)
-                        .font(.largeTitle)
-                    Text(title)
-                        .font(.headline)
+                    Text(icon).font(.largeTitle)
+                    Text(title).font(.headline)
                 }
                 .opacity(animate ? 1 : 0)
-                .offset(x: animate ? 0 : 50)
+                .offset(x: animate ? 0 : 50)  // Slide in from right
             }
             Spacer()
         }
@@ -122,11 +128,13 @@ struct TasksPage: View {
     }
 }
 
+/// Page 3: How to mark complete
 struct MarkCompletePage: View {
     @State private var animate = false
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
+            // Big checkmark circle
             Image(systemName: "checkmark.circle.fill")
                 .resizable().scaledToFit().frame(width: 100, height: 100)
                 .foregroundColor(.green)
@@ -147,6 +155,7 @@ struct MarkCompletePage: View {
     }
 }
 
+/// Page 4: Streak explanation
 struct StreakPage: View {
     @State private var animate = false
     var body: some View {
@@ -165,10 +174,13 @@ struct StreakPage: View {
                 .opacity(animate ? 1 : 0)
             Spacer()
         }
-        .onAppear { withAnimation(.easeOut(duration: 0.6)) { animate = true } }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.6)) { animate = true }
+        }
     }
 }
 
+/// Page 5: Manual reset info
 struct ResetPage: View {
     @State private var animate = false
     var body: some View {
@@ -187,11 +199,15 @@ struct ResetPage: View {
                 .opacity(animate ? 1 : 0)
             Spacer()
         }
-        .onAppear { withAnimation(.easeIn(duration: 0.6)) { animate = true } }
+        .onAppear {
+            withAnimation(.easeIn(duration: 0.6)) { animate = true }
+        }
     }
 }
 
+/// Page 6: Final motivational screen with start button
 struct MotivationalPage: View {
+    /// Called when the user taps "Start My Challenge"
     let onStart: () -> Void
     @State private var animate = false
     var body: some View {
@@ -216,7 +232,11 @@ struct MotivationalPage: View {
             Spacer()
         }
         .padding()
-        .onAppear { withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) { animate = true } }
+        .onAppear {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.6)) {
+                animate = true
+            }
+        }
     }
 }
 

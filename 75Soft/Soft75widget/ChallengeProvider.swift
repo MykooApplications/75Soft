@@ -8,36 +8,41 @@ import WidgetKit
 import SwiftUI
 import SwiftData
 
+// MARK: - The data our widget shows in each “timeline entry”
 struct ChallengeEntry: TimelineEntry {
-    let date: Date
-    let currentDay: Int
-    let streakCount: Int
-    let tasks: [String: Bool]
+    let date: Date                // When this entry was created
+    let currentDay: Int           // What day of the 75-day challenge we’re on
+    let streakCount: Int          // How many days in a row have been completed
+    let tasks: [String: Bool]     // A dictionary of tasks and whether they’re done
 }
 
+// MARK: - The provider that hands WidgetKit a fresh ChallengeEntry when it asks
 struct ChallengeProvider: TimelineProvider {
+    // Called to build a timeline of one or more entries
     func getTimeline(in context: Context, completion: @escaping (Timeline<ChallengeEntry>) -> Void) {
-        let appGroupID = "group.com.roshanm.soft75" // use your actual value
+        let appGroupID = "group.com.roshanm.soft75"  // Your App Group ID
+        // Where we wrote our shared JSON in the main app
         let fileURL = FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
             .appendingPathComponent("widgetData.json")
-
+        
+        // Try to read & decode the JSON
         if let url = fileURL,
            let data = try? Data(contentsOf: url),
            let decoded = try? JSONDecoder().decode(SharedWidgetData.self, from: data) {
-
-           // print("✅ Widget read data: \(decoded)")
             
+            // If that worked, make an entry with the real data
             let entry = ChallengeEntry(
                 date: Date(),
                 currentDay: decoded.currentDay,
                 streakCount: decoded.streakCount,
                 tasks: decoded.tasks
             )
+            // We only need one entry, and we’ll refresh “atEnd”
             completion(Timeline(entries: [entry], policy: .atEnd))
-
+            
         } else {
-            //print("❌ Widget failed to read or decode JSON")
+            // If reading failed, show a blank/fallback entry
             let fallback = ChallengeEntry(
                 date: Date(),
                 currentDay: 0,
@@ -53,7 +58,7 @@ struct ChallengeProvider: TimelineProvider {
         }
     }
     
-    
+    // A simple placeholder shown while the real data loads
     func placeholder(in context: Context) -> ChallengeEntry {
         ChallengeEntry(
             date: Date(),
@@ -67,17 +72,18 @@ struct ChallengeProvider: TimelineProvider {
             ]
         )
     }
-
+    
+    // A quick “snapshot” for previews or the lock screen
     func getSnapshot(in context: Context, completion: @escaping (ChallengeEntry) -> Void) {
-        let fm = FileManager.default
-        let url = fm
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.roshanm.soft75")!
+        let appGroupID = "group.com.roshanm.soft75"
+        let url = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID)!
             .appendingPathComponent("widgetData.json")
-
-        var entry: ChallengeEntry
-
+        
+        let entry: ChallengeEntry
         if let data = try? Data(contentsOf: url),
            let decoded = try? JSONDecoder().decode(SharedWidgetData.self, from: data) {
+            // Use real data if available
             entry = ChallengeEntry(
                 date: Date(),
                 currentDay: decoded.currentDay,
@@ -85,6 +91,7 @@ struct ChallengeProvider: TimelineProvider {
                 tasks: decoded.tasks
             )
         } else {
+            // Otherwise fall back
             entry = ChallengeEntry(
                 date: Date(),
                 currentDay: 1,
@@ -97,26 +104,33 @@ struct ChallengeProvider: TimelineProvider {
                 ]
             )
         }
-
         completion(entry)
     }
 }
 
+// MARK: - Small view that draws the circle and number
 struct WidgetProgressView: View {
     let currentDay: Int
-
+    
+    // How “full” the circle should be (0.0…1.0)
     var progress: Double {
         min(Double(currentDay) / 75.0, 1.0)
     }
-
+    
     var body: some View {
         ZStack {
+            // Gray background circle
             Circle()
                 .stroke(Color.gray.opacity(0.3), lineWidth: 10)
+            // Colored “trimmed” circle showing progress
             Circle()
                 .trim(from: 0, to: progress)
-                .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 10, lineCap: .round))
-                .rotationEffect(.degrees(-90))
+                .stroke(
+                    Color.accentColor,
+                    style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90)) // start at top
+            // Big number and “Day Streak” label
             VStack {
                 Text("\(currentDay)")
                     .font(.title2)
@@ -129,13 +143,16 @@ struct WidgetProgressView: View {
     }
 }
 
+// MARK: - Small view that lists each task with a little circle
 struct WidgetChecklistView: View {
     var tasks: [String: Bool]
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            // Sort keys so order is stable
             ForEach(tasks.sorted(by: { $0.key < $1.key }), id: \.key) { task, done in
                 HStack(spacing: 6) {
+                    // Little circle, filled if done
                     ZStack {
                         Circle()
                             .strokeBorder(done ? Color.accentColor : Color.gray, lineWidth: 2)
@@ -146,6 +163,7 @@ struct WidgetChecklistView: View {
                                 .frame(width: 8, height: 8)
                         }
                     }
+                    // Task name
                     Text(task)
                         .font(.caption2)
                         .lineLimit(1)
@@ -157,10 +175,12 @@ struct WidgetChecklistView: View {
     }
 }
 
-// Widget 1: Small Progress Only
+// MARK: - The three widget configurations
+
+// 1) Small circle-only widget
 struct SmallProgressWidget: Widget {
     let kind = "SmallProgressWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: ChallengeProvider()) { entry in
             WidgetProgressView(currentDay: entry.currentDay)
@@ -172,10 +192,10 @@ struct SmallProgressWidget: Widget {
     }
 }
 
-// Widget 2: Small Checklist Only
+// 2) Small checklist-only widget
 struct SmallChecklistWidget: Widget {
     let kind = "SmallChecklistWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: ChallengeProvider()) { entry in
             WidgetChecklistView(tasks: entry.tasks)
@@ -187,10 +207,10 @@ struct SmallChecklistWidget: Widget {
     }
 }
 
-// Widget 3: Medium Combined
+// 3) Medium widget with both circle + list
 struct MediumComboWidget: Widget {
     let kind = "MediumComboWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: ChallengeProvider()) { entry in
             HStack(alignment: .center) {
@@ -206,6 +226,7 @@ struct MediumComboWidget: Widget {
     }
 }
 
+// MARK: - Bundle that groups all three widgets
 @main
 struct Soft75WidgetBundle: WidgetBundle {
     var body: some Widget {

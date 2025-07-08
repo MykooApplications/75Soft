@@ -9,23 +9,29 @@ import SwiftUI
 import Charts
 import SwiftData
 
+// The main History screen that shows your progress over time.
 struct HistoryView: View {
+    // We need the SwiftData context to fetch and save data.
     @Environment(\.modelContext) private var modelContext
     
-    // Fetch daily entries sorted by date
+    // 1) Fetch all daily entries, sorted by earliest date first.
     @Query(sort: [ SortDescriptor(\DailyEntry.date, order: .forward) ])
     private var entries: [DailyEntry]
     
+    // 2) Fetch the single ChallengeState (there’s only one).
     @Query private var state: [ChallengeState]
     
+    // Helper to grab that one ChallengeState object.
     private var challengeState: ChallengeState? { state.first }
     
-    // MARK: - Computed Properties
+    // MARK: – Computed stats
     
+    // How many days in a row you’ve currently completed.
     private var currentStreak: Int {
         challengeState?.currentDay ?? 0
     }
     
+    // Total number of days (entries) where you did all four tasks.
     private var totalCompleted: Int {
         entries.filter { entry in
             entry.waterCompleted &&
@@ -36,20 +42,27 @@ struct HistoryView: View {
         .count
     }
     
+    // Your best streak ever—longest run of consecutive fully completed days.
     private var bestStreak: Int {
         var maxStreak = 0
         var running = 0
         for entry in entries.sorted(by: { $0.date < $1.date }) {
-            if entry.waterCompleted && entry.pagesRead && entry.dietClean && entry.workoutDone {
+            // If you did everything today, add 1 to your running streak
+            if entry.waterCompleted &&
+                entry.pagesRead &&
+                entry.dietClean &&
+                entry.workoutDone {
                 running += 1
                 maxStreak = max(maxStreak, running)
             } else {
+                // Otherwise, reset the running count to 0
                 running = 0
             }
         }
         return maxStreak
     }
     
+    // A dictionary mapping each calendar day to `true` if fully done, `false` if not
     private var completionByDate: [Date: Bool] {
         Dictionary(
             uniqueKeysWithValues: entries.map { entry in
@@ -63,6 +76,7 @@ struct HistoryView: View {
         )
     }
     
+    // An array that shows how your streak grew day by day (for charting)
     private var streakTrend: [Int] {
         var trend: [Int] = []
         var count = 0
@@ -71,48 +85,51 @@ struct HistoryView: View {
             if entry.waterCompleted &&
                 entry.pagesRead &&
                 entry.dietClean &&
-                entry.workoutDone
-            {
-                count += 1
+                entry.workoutDone {
+                count += 1 // still going
             }
             trend.append(count)
         }
         return trend
     }
     
+    // How often you completed each individual task (for “Task Insights”)
     private var taskRates: [(task: String, rate: Double)] {
         let totalDays = entries.count
         guard totalDays > 0 else { return [] }
         
         let waterRate   = Double(entries.filter { $0.waterCompleted }.count) / Double(totalDays)
-        let readRate    = Double(entries.filter { $0.pagesRead }.count) / Double(totalDays)
-        let dietRate    = Double(entries.filter { $0.dietClean }.count) / Double(totalDays)
-        let workoutRate = Double(entries.filter { $0.workoutDone }.count) / Double(totalDays)
+        let readRate    = Double(entries.filter { $0.pagesRead }.count)     / Double(totalDays)
+        let dietRate    = Double(entries.filter { $0.dietClean }.count)     / Double(totalDays)
+        let workoutRate = Double(entries.filter { $0.workoutDone }.count)   / Double(totalDays)
         
         return [
             ("💧 Water", waterRate),
-            ("📖 Read", readRate),
-            ("🥗 Diet", dietRate),
+            ("📖 Read",   readRate),
+            ("🥗 Diet",   dietRate),
             ("🏃‍♂️ Workout", workoutRate)
         ]
     }
     
+    // Tiny Badge model: a name and whether you’ve unlocked it
     struct Badge: Identifiable {
         let id = UUID()
         let title: String
         let unlocked: Bool
     }
     
+    // The list of badges based on your current streak
     private var badges: [Badge] {
         [
-            Badge(title: "7-Day Streak",   unlocked: currentStreak >=  7),
-            Badge(title: "30-Day Streak",  unlocked: currentStreak >= 30),
-            Badge(title: "75-Day Finish",  unlocked: currentStreak >= 75)
+            Badge(title: "7-Day Streak",  unlocked: currentStreak >=  7),
+            Badge(title: "30-Day Streak", unlocked: currentStreak >= 30),
+            Badge(title: "75-Day Finish", unlocked: currentStreak >= 75)
         ]
     }
     
-    // MARK: - View State
+    // MARK: – UI State
     
+    // Which view tab is selected: calendar or charts?
     @State private var selectedView: ViewType = .calendar
     
     enum ViewType: String, CaseIterable, Identifiable {
@@ -121,29 +138,34 @@ struct HistoryView: View {
         var id: String { rawValue }
     }
     
-    // MARK: - Body
+    // MARK: – View Body
     
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Stats Cards
-                // Stats Cards
+                
+                // 1) Stats Cards at the top
                 HStack(spacing: 16) {
-                    StatCard(icon: "flame.fill", title: "Current Streak", value: "\(currentStreak)")
-                        .frame(maxWidth: .infinity)               // fill half the screen
-                        .aspectRatio(1.5, contentMode: .fit)      // wider than tall
-                    
-                    StatCard(icon: "checkmark.seal.fill", title: "Total Completed", value: "\(totalCompleted)")
-                        .frame(maxWidth: .infinity)
-                        .aspectRatio(1.5, contentMode: .fit)
-                    StatCard(icon: "star.fill", title: "Best Streak", value: "\(bestStreak)")
-                        .frame(maxWidth: .infinity)
-                        .aspectRatio(1.5, contentMode: .fit)
+                    StatCard(
+                        icon: "flame.fill",
+                        title: "Current Streak",
+                        value: "\(currentStreak)"
+                    )
+                    StatCard(
+                        icon: "checkmark.seal.fill",
+                        title: "Total Completed",
+                        value: "\(totalCompleted)"
+                    )
+                    StatCard(
+                        icon: "star.fill",
+                        title: "Best Streak",
+                        value: "\(bestStreak)"
+                    )
                 }
                 .padding(.horizontal)
                 
-                // Toggle + Calendar/Charts
-                VStack() {
+                // 2) Toggle between Calendar and Charts
+                VStack(spacing: 8) {
                     Picker("View", selection: $selectedView) {
                         ForEach(ViewType.allCases) { tab in
                             Text(tab.rawValue).tag(tab)
@@ -151,22 +173,26 @@ struct HistoryView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     
-                    if selectedView == .calendar, let challengeStart = challengeState?.startDate {
+                    if selectedView == .calendar,
+                       let challengeStart = challengeState?.startDate {
+                        // Calendar view
                         CalendarView(
                             completionByDate: completionByDate,
                             startDate: challengeStart
                         )
                         .frame(height: 250, alignment: .top)
                     } else {
+                        // Charts view
                         ChartsView(streakTrend: streakTrend)
                             .frame(height: 250)
                     }
                 }
                 .padding(.horizontal)
                 
-                // Task Insights
+                // 3) Task Insights list
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Task Insights").font(.headline)
+                    Text("Task Insights")
+                        .font(.headline)
                     ForEach(taskRates, id: \.task) { insight in
                         HStack {
                             Text(insight.task)
@@ -177,9 +203,10 @@ struct HistoryView: View {
                 }
                 .padding(.horizontal)
                 
-                // Achievements
+                // 4) Achievements badges
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Achievements").font(.headline)
+                    Text("Achievements")
+                        .font(.headline)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(badges) { badge in
@@ -198,8 +225,7 @@ struct HistoryView: View {
     }
 }
 
-// MARK: - Supporting Views
-
+// MARK: – StatCard: shows an icon, a title, and a big number
 struct StatCard: View {
     let icon: String
     let title: String
@@ -207,9 +233,13 @@ struct StatCard: View {
     
     var body: some View {
         VStack {
-            Image(systemName: icon).font(.title)
-            Text(title).font(.caption)
-            Text(value).font(.title2).bold()
+            Image(systemName: icon)
+                .font(.title)
+            Text(title)
+                .font(.caption)
+            Text(value)
+                .font(.title2)
+                .bold()
         }
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
@@ -218,6 +248,7 @@ struct StatCard: View {
     }
 }
 
+// MARK: – ChartsView: line chart of your streak over time
 struct ChartsView: View {
     let streakTrend: [Int]
     
@@ -235,6 +266,7 @@ struct ChartsView: View {
     }
 }
 
+// MARK: – BadgeView: small card showing an achievement badge
 struct BadgeView: View {
     let badge: HistoryView.Badge
     
@@ -243,7 +275,8 @@ struct BadgeView: View {
             Image(systemName: badge.unlocked ? "award.fill" : "lock.fill")
                 .font(.largeTitle)
                 .foregroundColor(badge.unlocked ? .yellow : .gray)
-            Text(badge.title).font(.caption)
+            Text(badge.title)
+                .font(.caption)
         }
         .padding()
         .background(Color(UIColor.systemBackground))
