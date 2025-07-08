@@ -108,9 +108,7 @@ Contributing
 
 5.	Open a Pull Request.
 
-6.	
-
-Please follow the existing code style and include tests where appropriate.
+6.	Please follow the existing code style and include tests where appropriate.
 
 License
 
