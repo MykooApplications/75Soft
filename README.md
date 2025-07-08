@@ -67,45 +67,48 @@ Installation
 3.	Select the App or Widget target and run on iOS 16 or later.
 
 Usage
-	1.	On first launch, complete or skip the onboarding screens.
-	2.	Tap Start Today to insert today’s entry.
-	3.	Tap each circle to mark a task complete. Completing all tasks advances the streak.
-	4.	Add “75Soft” widgets to your Home Screen to view progress at a glance.
-	5.	Access History via the sidebar menu for calendar and chart insights.
-	6.	Configure Settings for notifications, reset options, and developer tools.
+
+ 1.	On first launch, complete or skip the onboarding screens.
+ 2.	Tap Start Today to insert today’s entry.
+ 3.	Tap each circle to mark a task complete. Completing all tasks advances the streak.
+ 4.	Add “75Soft” widgets to your Home Screen to view progress at a glance.
+ 5.	Access History via the sidebar menu for calendar and chart insights.
+ 6.	Configure Settings for notifications, reset options, and developer tools.
 
 Architecture Diagram
 
-ContentView (SwiftUI)
-      │
-      ▼
-ChallengeViewModel (ObservableObject)
-      │
-DailyEntry & ChallengeState (SwiftData Models)
-      │
-WidgetKit ↔ JSON file via App Group
+	ContentView (SwiftUI)
+	      │
+	      ▼
+	ChallengeViewModel (ObservableObject)
+	      │
+	DailyEntry & ChallengeState (SwiftData Models)
+	      │
+	WidgetKit ↔ JSON file via App Group
 
-	•	Views bind to ViewModels which manage state and persistence.
-	•	Widgets read shared JSON snapshot and update automatically.
+•	Views bind to ViewModels which manage state and persistence.
+•	Widgets read shared JSON snapshot and update automatically.
 
 Contributing
-	1.	Fork the repository.
-	2.	Create a feature branch:
+1. Fork the repository.
+2. Create a feature branch:
 
-git checkout -b my-feature
-
-
-	3.	Commit your changes:
-
-git commit -m "Add feature"
+		git checkout -b my-feature
 
 
-	4.	Push to your branch:
+3.	Commit your changes:
 
-git push origin my-feature
+		git commit -m "Add feature"
 
 
-	5.	Open a Pull Request.
+4.	Push to your branch:
+
+		git push origin my-feature
+
+
+5.	Open a Pull Request.
+
+6.	
 
 Please follow the existing code style and include tests where appropriate.
 
