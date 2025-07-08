@@ -1,5 +1,5 @@
 //
-//  SettingsView 2.swift
+//  SettingsView.swift
 //  75Soft
 //
 //  Created by Roshan Mykoo on 6/5/25.

@@ -1,5 +1,9 @@
-// ContentView.swift
-
+//
+//  ContentView.swift
+//  75Soft
+//
+//  Created by Roshan Mykoo on 6/4/25.
+//
 import SwiftUI
 import SwiftData
 import WidgetKit

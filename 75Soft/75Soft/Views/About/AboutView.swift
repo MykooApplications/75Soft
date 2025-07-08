@@ -1,5 +1,5 @@
 //
-//  AboutView 2.swift
+//  AboutView.swift
 //  75Soft
 //
 //  Created by Roshan Mykoo on 6/5/25.

@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  DailyEntry.swift
 //  75Soft
 //
 //  Created by Roshan Mykoo on 6/4/25.
