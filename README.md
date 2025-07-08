@@ -52,18 +52,19 @@
 <img src="docs/screenshots/main.png" width=50%>
 
 Installation
-	1.	Clone the repository:
 
-git clone https://github.com/your-username/75Soft.git
-cd 75Soft
+1.	Clone the repository:
 
-
-	2.	Open in Xcode 15 or later:
-
-open 75Soft.xcodeproj
+		git clone https://github.com/your-username/75Soft.git
+		cd 75Soft
 
 
-	3.	Select the App or Widget target and run on iOS 16 or later.
+2.	Open in Xcode 15 or later:
+
+		open 75Soft.xcodeproj
+
+
+3.	Select the App or Widget target and run on iOS 16 or later.
 
 Usage
 	1.	On first launch, complete or skip the onboarding screens.
