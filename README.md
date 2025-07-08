@@ -46,8 +46,11 @@
 ---
 
 ## Screenshots
-![Main Screen](docs/screenshots/main.png)
-![History Calendar](docs/screenshots/history.png)
+<!-- ![Main Screen](docs/screenshots/main.png)
+![History Calendar](docs/screenshots/history.png) -->
+<img src="docs/screenshots/main.png" width=50% height=50%>
+<img src="docs/screenshots/main.png" width=50% height=50%>
+
 <!--  Screenshots go here.  
 > Add images under `docs/screenshots/` and reference them like below:
 
