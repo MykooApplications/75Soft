@@ -46,7 +46,8 @@
 ---
 
 ## Screenshots
-
+![Main Screen](docs/screenshots/main.png)
+![History Calendar](docs/screenshots/history.png)
 <!--  Screenshots go here.  
 > Add images under `docs/screenshots/` and reference them like below:
 
